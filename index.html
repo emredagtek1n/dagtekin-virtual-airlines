@@ -4,44 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dağtekin Virtual Airlines</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-/* ===== Interactive motion ===== */
-function animateNumber(el, target, duration=900, prefix="", suffix=""){
-  const start=0;
-  const t0=performance.now();
-  function tick(now){
-    const p=Math.min(1,(now-t0)/duration);
-    const eased=1-Math.pow(1-p,3);
-    const value=start+(target-start)*eased;
-    el.textContent=prefix+Math.round(value).toLocaleString("en-US")+suffix;
-    if(p<1)requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-}
-
-/* Keep the original Supabase profile values and animate visible counters. */
-const originalLoadProfile = loadProfile;
-loadProfile = async function(user){
-  await originalLoadProfile(user);
-  const balanceEl=document.getElementById("pilotBalance");
-  const stats=Array.from(document.querySelectorAll(".stat strong"));
-  if(balanceEl){
-    const raw=(balanceEl.textContent||"").replace(/[$,]/g,"");
-    const target=parseFloat(raw)||0;
-    animateNumber(balanceEl,target,900,"$");
-  }
-  if(stats[0]){
-    const raw=(stats[0].textContent||"").replace(/[$,]/g,"");
-    const target=parseFloat(raw)||0;
-    animateNumber(stats[0],target,1000,"$");
-  }
-  if(stats[2]){
-    const target=parseInt(stats[2].textContent,10)||0;
-    animateNumber(stats[2],target,700);
-  }
-};
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--bg:#030914;--panel:#071523;--line:#1b3046;--gold:#d8aa3b;--red:#d62929;--blue:#2e9cf3;--green:#33d36f;--text:#f4f6fa;--muted:#94a5b8}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Arial,sans-serif}button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -71,52 +34,24 @@ footer{border-top:1px solid var(--line);padding:25px;text-align:center;color:#71
 .aircraft{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #15283b}.open{color:var(--green)}.locked{color:#70808e}
 @media(max-width:950px){.plane{display:none}.cards,.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.navLinks{display:none}}
 
-/* ===== Dağtekin Motion Layer ===== */
-@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
-@keyframes floatPlane{0%,100%{transform:translate3d(0,0,0) rotate(-10deg)}50%{transform:translate3d(-18px,-10px,0) rotate(-8deg)}}
-@keyframes glow{0%,100%{box-shadow:0 0 0 rgba(216,170,59,0)}50%{box-shadow:0 0 28px rgba(216,170,59,.18)}}
-@keyframes shine{0%{background-position:-180% 0}100%{background-position:180% 0}}
-@keyframes pulseDot{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.25)}}
-
-.heroText > *{animation:fadeUp .75s ease both}
-.heroText .eyebrow{animation-delay:.08s}.heroText h1{animation-delay:.16s}
-.heroText p{animation-delay:.24s}.heroText .buttons{animation-delay:.32s}
-.heroText .eyebrow{position:relative}
-.heroText .eyebrow:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);margin-right:9px;vertical-align:1px;animation:pulseDot 1.8s ease-in-out infinite}
-
-.plane{animation:floatPlane 5s ease-in-out infinite}
-.btn{transition:transform .22s ease,box-shadow .22s ease,background .22s ease}
-.btn:hover{box-shadow:0 10px 30px rgba(0,0,0,.28)}
-.btn.gold{background:linear-gradient(110deg,var(--gold) 0%,#f0cf76 45%,var(--gold) 70%);background-size:220% 100%;animation:shine 5s linear infinite}
-
-.card{transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
-.card:hover{transform:translateY(-6px);border-color:#345b7e;box-shadow:0 18px 40px rgba(0,0,0,.22)}
-.cardIcon{transition:transform .25s ease}.card:hover .cardIcon{transform:scale(1.12) translateY(-2px)}
-
-.modalBox{animation:fadeUp .25s ease both}
-.stats .stat{transition:background .2s ease,transform .2s ease}
-.stats .stat:hover{background:#0a1d30;transform:translateY(-2px)}
-
-#dashboard > .dnav{animation:fadeUp .5s ease both}
-#dashboard .wrap > h1,
-#dashboard .wrap > p,
-#dashboard .stats,
-#dashboard .grid{animation:fadeUp .55s ease both}
-#dashboard .wrap > p{animation-delay:.08s}
-#dashboard .stats{animation-delay:.16s}
-#dashboard .grid{animation-delay:.24s}
-
-.panel{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
-.panel:hover{transform:translateY(-4px);border-color:#29445e;box-shadow:0 14px 35px rgba(0,0,0,.2)}
-
-#dashboard .progress div{transition:width 1.1s cubic-bezier(.22,.61,.36,1)}
-#dashboard .aircraft{transition:padding-left .2s ease,background .2s ease}
-#dashboard .aircraft:hover{padding-left:8px;background:#091b2d}
-
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation:none!important;transition:none!important}
-}
-
+/* --- navigation / pages --- */
+.brandButton{background:none;border:0;padding:0;color:inherit;text-align:left}
+.navBtn{background:none;border:0;color:#d7e0e9;padding:0;position:relative}
+.navBtn.active,.navBtn:hover{color:var(--gold)}
+.page{display:none;animation:fadeUp .4s ease both}.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:none}}
+.dashboardHomeHero{min-height:300px;padding:45px;position:relative;overflow:hidden;background:radial-gradient(circle at 75% 20%,#173b59 0,transparent 30%),linear-gradient(120deg,#06111e,#0b1d2f);border:1px solid var(--line);border-radius:12px;margin-bottom:14px}
+.dashboardHomeHero h1{font:900 58px Georgia;margin:10px 0}.dashboardHomeHero h1 span{color:var(--red);font-size:28px;letter-spacing:8px}
+.dashboardHomeHero p{max-width:580px;color:#c1cedb;line-height:1.7}
+.sectionTitle{font:700 24px Georgia;margin:0 0 8px}.sectionSub{color:var(--muted);margin-bottom:22px}
+.featureGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.featureBox{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px;transition:.22s}.featureBox:hover{transform:translateY(-4px);border-color:#335a7b}.featureBox .big{font-size:28px;color:var(--gold);margin-bottom:12px}
+.flightCards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.flightCard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px}.flightId{font-size:22px;font-weight:900;color:var(--green)}.routeLine{display:flex;justify-content:space-between;align-items:center;margin:18px 0}.routeLine b{font-size:20px}.routeLine small{display:block;color:var(--muted)}
+.fleetGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.fleetCard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;transition:.22s}.fleetCard:hover{transform:translateY(-5px);border-color:#365e80}.fleetCard img{width:100%;height:190px;object-fit:cover;display:block}.fleetBody{padding:20px}.fleetBody h3{margin:0 0 8px;font-size:22px}.fleetBody p{color:var(--muted)}.badgeOpen{color:var(--green);font-weight:800}
+.statGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.bigStat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:22px}.bigStat small{display:block;color:var(--muted)}.bigStat strong{display:block;font-size:30px;margin-top:7px}
+.careerHero{display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:25px}.careerRing{width:175px;height:175px;border:7px solid #1b3551;border-top-color:var(--blue);border-right-color:#176fbe;border-radius:50%;display:grid;place-items:center;text-align:center}.rankName{color:#57aaff;font-weight:900;font-size:18px}.careerRows{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}
+.emptyNote{padding:18px;border:1px dashed #29445e;border-radius:9px;color:var(--muted);text-align:center}
+.companyChart{height:190px;display:flex;align-items:end;gap:12px;padding:15px 4px;border-bottom:1px solid var(--line);margin-top:18px}.companyBar{flex:1;background:linear-gradient(#3ba5ff,#154875);border-radius:5px 5px 0 0;min-height:8px}
+@media(max-width:900px){.featureGrid,.flightCards,.fleetGrid,.statGrid{grid-template-columns:1fr}.careerHero{grid-template-columns:1fr;text-align:center}.careerRing{margin:auto}.careerRows{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -151,41 +86,86 @@ footer{border-top:1px solid var(--line);padding:25px;text-align:center;color:#71
 
 <div id="dashboard">
 <header class="dnav">
-<div class="logo"><div class="logoMark">✈</div><div><strong>DAĞTEKİN</strong><small>AIRLINES</small></div></div>
-<div class="navLinks"><span>ANA SAYFA</span><span>UÇUŞLAR</span><span>FİLO</span><span>ROTALAR</span><span>KARİYER</span><span>ŞİRKET</span></div>
+<button class="brandButton" onclick="showPage('homePage')" aria-label="Ana Sayfa"><div class="logo"><div class="logoMark">✈</div><div><strong>DAĞTEKİN</strong><small>AIRLINES</small></div></button>
+</div>
+<div class="navLinks"><button class="navBtn active" onclick="showPage('homePage')">ANA SAYFA</button><button class="navBtn" onclick="showPage('flightsPage')">UÇUŞLAR</button><button class="navBtn" onclick="showPage('fleetPage')">FİLO</button><button class="navBtn" onclick="showPage('careerPage')">KARİYER</button><button class="navBtn" onclick="showPage('companyPage')">ŞİRKET</button></div>
 <div class="user"><div class="avatar" id="avatar">D</div><div><strong id="navPilotId">DGT-0001</strong><small id="navName">Pilot</small></div><button class="logout" onclick="logout()">ÇIKIŞ</button></div>
 </header>
 
+
 <div class="wrap">
-<h1>Gökyüzü seni bekliyor.</h1><p style="color:#8495a7;margin:8px 0 25px">Dağtekin Virtual Airlines pilot paneline hoş geldin.</p>
 
-<div class="stats">
-<div class="stat"><small>ŞİRKET BAKİYESİ</small><strong>$0</strong></div>
-<div class="stat"><small>AKTİF UÇUŞ</small><strong>0</strong></div>
-<div class="stat"><small>PİLOT</small><strong id="pilotCount">1</strong></div>
-<div class="stat"><small>FİLO</small><strong>2</strong></div>
-<div class="stat"><small>DESTİNASYON</small><strong>0</strong></div>
-</div>
+<section id="homePage" class="page active">
+  <div class="dashboardHomeHero">
+    <div style="color:#dfaa35;font-weight:900;letter-spacing:3px">GÖKYÜZÜ SENİ BEKLİYOR</div>
+    <h1>DAĞTEKİN<br><span>AIRLINES</span></h1>
+    <p>Dağtekin Virtual Airlines pilot portalına hoş geldin. Buradan uçuşlarını, filonu, kişisel kariyerini ve şirket istatistiklerini takip edeceksin.</p>
+    <div class="buttons"><button class="btn gold" onclick="showPage('flightsPage')">✈ UÇUŞLARA GİT</button><button class="btn" onclick="showPage('careerPage')">KARİYERİM</button></div>
+  </div>
+  <h2 class="sectionTitle">Dağtekin'de bugün</h2>
+  <p class="sectionSub">Şirket büyüdükçe bu alan gerçek istatistiklerle dolacak.</p>
+  <div class="featureGrid">
+    <div class="featureBox"><div class="big">✈</div><h3>Uçuşlar</h3><p class="muted">Planlanan ve tamamlanan DGT uçuşları.</p></div>
+    <div class="featureBox"><div class="big">🛫</div><h3>Başlangıç Filosu</h3><p class="muted">1 Airbus A320neo ve 1 Boeing 737-800.</p></div>
+    <div class="featureBox"><div class="big">📡</div><h3>MSFS Bağlantısı</h3><p class="muted">İleride gerçek uçuş verileri bu sisteme bağlanacak.</p></div>
+  </div>
+</section>
 
-<div class="grid">
-<div class="panel"><h3>AKTİF UÇUŞLAR</h3><div class="info"><strong>DGT101</strong><span>İstanbul → Londra</span></div><div class="info"><strong>DGT102</strong><span>Yakında</span></div></div>
-<div class="panel"><h3>PİLOT KARİYERİM</h3>
-<div class="info"><span>PİLOT ID</span><strong id="pilotId">DGT-0001</strong></div>
-<div class="info"><span>RÜTBE</span><strong id="pilotRank">First Officer</strong></div>
-<div class="info"><span>UÇUŞ SAATİ</span><strong id="pilotHours">0:00</strong></div>
-<div class="info"><span>TOPLAM UÇUŞ</span><strong id="pilotFlights">0</strong></div>
-<div class="info"><span>BAKİYE</span><strong id="pilotBalance">$0</strong></div>
-</div>
-<div class="panel level"><h3>KARİYER SEVİYESİ</h3><div class="medal">🏅</div><h2 id="careerLevel">SEVİYE 1</h2><div class="progress"><div id="careerBar"></div></div><p id="careerPercent" style="color:#8292a4">%0</p></div>
-<div class="panel"><h3>UÇAK YETKİLERİ</h3>
-<div class="aircraft"><span>✈ A320neo</span><span class="open">AÇIK ✓</span></div>
-<div class="aircraft"><span>✈ B737-800</span><span class="open">AÇIK ✓</span></div>
-<div class="aircraft"><span>✈ A321neo</span><span class="locked">KİLİTLİ 🔒</span></div>
-<div class="aircraft"><span>✈ B787-9</span><span class="locked">KİLİTLİ 🔒</span></div>
-<div class="aircraft"><span>✈ A350-900</span><span class="locked">KİLİTLİ 🔒</span></div>
-</div>
-</div>
+<section id="flightsPage" class="page">
+  <h2 class="sectionTitle">Uçuşlar</h2>
+  <p class="sectionSub">Dağtekin'in planlanan uçuşları.</p>
+  <div class="flightCards">
+    <article class="flightCard"><div class="flightId">DGT101</div><div class="muted">PLANLANDI · A320neo</div>
+      <div class="routeLine"><div><b>LTFM</b><small>İstanbul</small></div><div style="color:var(--gold);font-size:24px">✈</div><div style="text-align:right"><b>EGLL</b><small>Londra</small></div></div>
+      <div class="info"><span>Kalkış</span><strong>18:30</strong></div><div class="info"><span>Varış</span><strong>21:20</strong></div></article>
+    <article class="flightCard"><div class="flightId">DGT102</div><div class="muted">YAKINDA · B737-800</div>
+      <div class="routeLine"><div><b>LTFM</b><small>İstanbul</small></div><div style="color:var(--gold);font-size:24px">✈</div><div style="text-align:right"><b>LFPG</b><small>Paris</small></div></div>
+      <div class="info"><span>Durum</span><strong>Yakında</strong></div><div class="info"><span>Uçak</span><strong>B737-800</strong></div></article>
+  </div>
+</section>
+
+<section id="fleetPage" class="page">
+  <h2 class="sectionTitle">Filo</h2>
+  <p class="sectionSub">Başlangıç filomuz iki uçaktan oluşuyor.</p>
+  <div class="fleetGrid">
+    <article class="fleetCard"><img src="https://images.unsplash.com/photo-1556388158-158ea5ccacbd?auto=format&fit=crop&w=1200&q=80" alt="Airbus uçak"><div class="fleetBody"><div class="muted">AIRBUS · 1 ADET</div><h3>A320neo</h3><p>Kısa ve orta menzilli operasyonlar.</p><span class="badgeOpen">FİLODA ✓</span></div></article>
+    <article class="fleetCard"><img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80" alt="Boeing uçak"><div class="fleetBody"><div class="muted">BOEING · 1 ADET</div><h3>B737-800</h3><p>Bölgesel ve Avrupa operasyonları.</p><span class="badgeOpen">FİLODA ✓</span></div></article>
+  </div>
+  <div class="emptyNote" style="margin-top:18px">Yeni uçaklar şirket büyüdükçe eklenecek.</div>
+</section>
+
+<section id="careerPage" class="page">
+  <h2 class="sectionTitle">Pilot Kariyerim</h2>
+  <p class="sectionSub">Sadece senin hesabına ait kariyer verileri.</p>
+  <div class="careerHero">
+    <div class="careerRing">✈<br><span class="rankName" id="careerRankPage">First Officer</span></div>
+    <div class="careerRows">
+      <div class="info"><span>Pilot ID</span><strong id="careerPilotId">DGT-0001</strong></div>
+      <div class="info"><span>Ad Soyad</span><strong id="careerName">Pilot</strong></div>
+      <div class="info"><span>Uçuş Saati</span><strong id="careerHours">0:00</strong></div>
+      <div class="info"><span>Toplam Uçuş</span><strong id="careerFlights">0</strong></div>
+      <div class="info"><span>Bakiye</span><strong id="careerBalance">$0</strong></div>
+      <div class="info"><span>Seviye</span><strong id="careerLevelPage">SEVİYE 1</strong></div>
+    </div>
+  </div>
+</section>
+
+<section id="companyPage" class="page">
+  <h2 class="sectionTitle">Şirket</h2>
+  <p class="sectionSub">Dağtekin'in genel operasyon ve ekonomi durumu.</p>
+  <div class="statGrid">
+    <div class="bigStat"><small>TOPLAM UÇUŞ</small><strong id="companyFlights">0</strong></div>
+    <div class="bigStat"><small>TOPLAM KAZANÇ</small><strong id="companyEarned">$0</strong></div>
+    <div class="bigStat"><small>FİLO</small><strong>2</strong></div>
+    <div class="bigStat"><small>DESTİNASYON</small><strong id="companyDestinations">0</strong></div>
+  </div>
+  <div class="panel" style="margin-top:14px"><h3>Şirket Ekonomisi</h3><p class="muted">Şirket gelir/gider sistemi sonraki aşamada bağlanacak.</p>
+    <div class="companyChart"><i class="companyBar" style="height:12%"></i><i class="companyBar" style="height:19%"></i><i class="companyBar" style="height:15%"></i><i class="companyBar" style="height:24%"></i><i class="companyBar" style="height:20%"></i><i class="companyBar" style="height:30%"></i><i class="companyBar" style="height:34%"></i><i class="companyBar" style="height:40%"></i></div>
+  </div>
+</section>
+
 </div></div>
+
 
 <script>
 const SUPABASE_URL="https://nmvlcvczrcntqwagyqfc.supabase.co";
@@ -266,6 +246,7 @@ async function loadProfile(user){
   const progress=Math.min(100,(Number(data.flight_hours)%25)/25*100);
   careerBar.style.width=progress+"%";
   careerPercent.textContent="%"+Math.round(progress);
+  syncCareerPage(data);
 }
 
 function toClock(hours){
@@ -284,6 +265,20 @@ async function checkSession(){
   if(data.session) await loadProfile(data.session.user);
 }
 checkSession();
+
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  const page=document.getElementById(id);
+  if(page) page.classList.add("active");
+  document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));
+  const names={homePage:"ANA SAYFA",flightsPage:"UÇUŞLAR",fleetPage:"FİLO",careerPage:"KARİYER",companyPage:"ŞİRKET"};
+  document.querySelectorAll(".navBtn").forEach(b=>{if(b.textContent.trim()===names[id])b.classList.add("active")});
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function syncCareerPage(data){
+  const ids={careerPilotId:data.pilot_id,careerName:data.full_name||"Pilot",careerHours:toClock(data.flight_hours),careerFlights:data.total_flights,careerBalance:"$"+Number(data.balance).toLocaleString("en-US"),careerLevelPage:"SEVİYE "+data.career_level,careerRankPage:data.rank};
+  Object.entries(ids).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.textContent=val});
+}
 </script>
 </body>
 </html>
