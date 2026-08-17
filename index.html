@@ -1,574 +1,205 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dağtekin Virtual Airlines</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-:root{
-  --bg:#030914;--panel:#071523;--line:#1b3046;
-  --gold:#d8aa3b;--red:#d62929;--blue:#2e9cf3;
-  --green:#33d36f;--text:#f4f6fa;--muted:#94a5b8
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:14px Arial,sans-serif}
-button,input{font:inherit}button{cursor:pointer}
-.hidden{display:none!important}
-
-/* ANA SAYFA */
-#landing{
-  min-height:100vh;
-  background:
-    radial-gradient(circle at 65% 20%,#12304a 0,transparent 30%),
-    linear-gradient(#071421,#030914)
-}
-.top{
-  height:82px;padding:0 5%;display:flex;align-items:center;
-  justify-content:space-between;border-bottom:1px solid #172b40
-}
-.logo{display:flex;align-items:center;gap:12px}
-.logoMark{
-  width:48px;height:48px;border:2px solid var(--gold);
-  border-radius:50%;display:grid;place-items:center;color:var(--gold);
-  font-size:22px
-}
-.logo strong{display:block;font:800 24px Georgia;letter-spacing:2px}
-.logo small{display:block;color:var(--red);letter-spacing:5px;font-weight:900}
-.hero{
-  max-width:1200px;min-height:540px;margin:auto;padding:60px 5%;
-  display:flex;align-items:center;justify-content:space-between
-}
-.heroText{max-width:650px}
-.eyebrow{color:#dfaa35;font-weight:900;letter-spacing:4px}
-.hero h1{
-  font:900 clamp(48px,8vw,80px) Georgia;
-  line-height:.92;margin:15px 0
-}
-.hero h1 span{
-  display:block;color:var(--red);font-size:35px;letter-spacing:9px;margin-top:12px
-}
-.hero p{color:#aebbc9;font-size:17px;line-height:1.7}
-.buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}
-.btn{
-  padding:13px 25px;border:1px solid var(--gold);border-radius:8px;
-  background:transparent;color:white;font-weight:800
-}
-.btn.gold{background:var(--gold);color:#111}
-.plane{font-size:180px;opacity:.12;transform:rotate(-10deg)}
-
-.soon{border-top:1px solid var(--line);padding:35px 5% 55px}
-.soon h2{text-align:center;color:var(--gold);letter-spacing:4px}
-.cards{
-  max-width:1150px;margin:25px auto 0;
-  display:grid;grid-template-columns:repeat(3,1fr);gap:15px
-}
-.card{
-  background:linear-gradient(145deg,#0c1a29,#07111d);
-  border:1px solid var(--line);border-radius:12px;padding:24px;text-align:center
-}
-.cardIcon{font-size:28px}.card h3{margin:12px 0 8px}
-.card p{color:var(--muted);line-height:1.5}
-.tag{
-  display:inline-block;color:var(--gold);border:1px solid #4b3a14;
-  padding:4px 9px;border-radius:20px;font-size:10px
-}
-footer{
-  border-top:1px solid var(--line);padding:25px;
-  text-align:center;color:#718093;font-size:12px
-}
-
-/* GİRİŞ MODAL */
-.modal{
-  position:fixed;inset:0;background:#000c;display:none;
-  align-items:center;justify-content:center;padding:20px;z-index:50
-}
-.modal.active{display:flex}
-.modalBox{
-  width:min(430px,100%);background:#091625;border:1px solid var(--line);
-  border-radius:14px;padding:30px;position:relative
-}
-.close{
-  position:absolute;right:12px;top:8px;background:none;
-  border:0;color:white;font-size:25px
-}
-.modalBox h2{font:700 30px Georgia}
-.field{margin:14px 0}
-.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}
-.field input{
-  width:100%;padding:12px;border:1px solid #29445e;
-  border-radius:7px;background:#030b14;color:white
-}
-.message{margin-top:12px;color:#dfaa35;font-size:13px}
-
-/* PANEL */
-#dashboard{display:none;min-height:100vh;background:#030a14}
-.dnav{
-  height:82px;background:#030b15;border-bottom:1px solid var(--line);
-  display:flex;align-items:center;justify-content:space-between;padding:0 3%
-}
-.navLinks{display:flex;gap:25px;color:#d7e0e9}
-.user{display:flex;align-items:center;gap:10px}
-.avatar{
-  width:42px;height:42px;border-radius:50%;background:var(--gold);
-  color:#111;display:grid;place-items:center;font-weight:900
-}
-.user small{display:block;color:var(--muted)}
-.logout{
-  background:none;border:1px solid #30465d;color:white;
-  border-radius:6px;padding:8px 12px
-}
-.wrap{max-width:1400px;margin:auto;padding:35px 3%}
-.stats{
-  display:grid;grid-template-columns:repeat(5,1fr);
-  border:1px solid var(--line);border-radius:9px;overflow:hidden
-}
-.stat{background:#071525;padding:20px;border-right:1px solid var(--line)}
-.stat:last-child{border:0}.stat small{color:var(--muted)}
-.stat strong{display:block;font-size:23px;margin-top:5px}
-
-.grid{
-  display:grid;grid-template-columns:1.4fr 1.2fr .8fr .9fr;
-  gap:12px;margin-top:14px
-}
-.panel{
-  background:var(--panel);border:1px solid var(--line);
-  border-radius:9px;padding:18px
-}
-.panel h3{margin-top:0}
-.info{
-  display:flex;justify-content:space-between;
-  padding:10px 0;border-bottom:1px solid #15283b
-}
-.info span{color:var(--muted)}
-.level{text-align:center}
-.medal{font-size:62px}
-.progress{height:6px;background:#172d44;border-radius:10px;overflow:hidden}
-.progress div{height:100%;width:0;background:var(--blue)}
-.aircraft{
-  display:flex;justify-content:space-between;
-  padding:9px 0;border-bottom:1px solid #15283b
-}
-.open{color:var(--green)}.locked{color:#70808e}
-
-@media(max-width:950px){
-  .plane{display:none}
-  .cards,.grid{grid-template-columns:1fr}
-  .stats{grid-template-columns:1fr 1fr}
-  .navLinks{display:none}
-}
+:root{--bg:#030914;--panel:#071523;--line:#1b3046;--gold:#d8aa3b;--red:#d62929;--blue:#2e9cf3;--green:#33d36f;--text:#f4f6fa;--muted:#94a5b8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Arial,sans-serif}button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+#landing{min-height:100vh;background:radial-gradient(circle at 65% 20%,#12304a 0,transparent 30%),linear-gradient(#071421,#030914)}
+.top{height:82px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #172b40}
+.logo{display:flex;align-items:center;gap:12px}.logoMark{width:48px;height:48px;border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;color:var(--gold);font-size:22px}
+.logo strong{display:block;font:800 24px Georgia;letter-spacing:2px}.logo small{display:block;color:var(--red);letter-spacing:5px;font-weight:900}
+.hero{max-width:1200px;min-height:540px;margin:auto;padding:60px 5%;display:flex;align-items:center;justify-content:space-between}.heroText{max-width:650px}
+.eyebrow{color:#dfaa35;font-weight:900;letter-spacing:4px}.hero h1{font:900 clamp(48px,8vw,80px) Georgia;line-height:.92;margin:15px 0}
+.hero h1 span{display:block;color:var(--red);font-size:35px;letter-spacing:9px;margin-top:12px}.hero p{color:#aebbc9;font-size:17px;line-height:1.7}
+.buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}.btn{padding:13px 25px;border:1px solid var(--gold);border-radius:8px;background:transparent;color:white;font-weight:800}.btn.gold{background:var(--gold);color:#111}
+.plane{font-size:180px;opacity:.12;transform:rotate(-10deg)}.soon{border-top:1px solid var(--line);padding:35px 5% 55px}.soon h2{text-align:center;color:var(--gold);letter-spacing:4px}
+.cards{max-width:1150px;margin:25px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.card{background:linear-gradient(145deg,#0c1a29,#07111d);border:1px solid var(--line);border-radius:12px;padding:24px;text-align:center}
+.cardIcon{font-size:28px}.card h3{margin:12px 0 8px}.card p{color:var(--muted);line-height:1.5}.tag{display:inline-block;color:var(--gold);border:1px solid #4b3a14;padding:4px 9px;border-radius:20px;font-size:10px}
+footer{border-top:1px solid var(--line);padding:25px;text-align:center;color:#718093;font-size:12px}
+.modal{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;padding:20px;z-index:50}.modal.active{display:flex}
+.modalBox{width:min(430px,100%);background:#091625;border:1px solid var(--line);border-radius:14px;padding:30px;position:relative}.close{position:absolute;right:12px;top:8px;background:none;border:0;color:white;font-size:25px}
+.modalBox h2{font:700 30px Georgia}.field{margin:14px 0}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}
+.field input{width:100%;padding:12px;border:1px solid #29445e;border-radius:7px;background:#030b14;color:white}.message{margin-top:12px;font-size:13px}.error{color:#ff8383}.success{color:#55df88}
+#dashboard{display:none;min-height:100vh;background:#030a14}.dnav{height:82px;background:#030b15;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 3%}
+.navLinks{display:flex;gap:25px;color:#d7e0e9}.user{display:flex;align-items:center;gap:10px}.avatar{width:42px;height:42px;border-radius:50%;background:var(--gold);color:#111;display:grid;place-items:center;font-weight:900}
+.user small{display:block;color:var(--muted)}.logout{background:none;border:1px solid #30465d;color:white;border-radius:6px;padding:8px 12px}
+.wrap{max-width:1400px;margin:auto;padding:35px 3%}.stats{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.stat{background:#071525;padding:20px;border-right:1px solid var(--line)}.stat:last-child{border:0}.stat small{color:var(--muted)}.stat strong{display:block;font-size:23px;margin-top:5px}
+.grid{display:grid;grid-template-columns:1.4fr 1.2fr .8fr .9fr;gap:12px;margin-top:14px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:18px}.panel h3{margin-top:0}
+.info{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #15283b}.info span{color:var(--muted)}.level{text-align:center}.medal{font-size:62px}.progress{height:6px;background:#172d44;border-radius:10px;overflow:hidden}.progress div{height:100%;width:0;background:var(--blue)}
+.aircraft{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #15283b}.open{color:var(--green)}.locked{color:#70808e}
+@media(max-width:950px){.plane{display:none}.cards,.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.navLinks{display:none}}
 </style>
 </head>
-
 <body>
 
-<!-- ================= ANA SAYFA ================= -->
 <div id="landing">
-
 <header class="top">
-  <div class="logo">
-    <div class="logoMark">✈</div>
-    <div>
-      <strong>DAĞTEKİN</strong>
-      <small>AIRLINES</small>
-    </div>
-  </div>
-
-  <div class="buttons" style="margin:0">
-    <button class="btn" onclick="openAuth('login')">GİRİŞ YAP</button>
-    <button class="btn gold" onclick="openAuth('register')">KAYIT OL</button>
-  </div>
+<div class="logo"><div class="logoMark">✈</div><div><strong>DAĞTEKİN</strong><small>AIRLINES</small></div></div>
+<div class="buttons" style="margin:0"><button class="btn" onclick="openAuth('login')">GİRİŞ YAP</button><button class="btn gold" onclick="openAuth('register')">KAYIT OL</button></div>
 </header>
-
-<section class="hero">
-  <div class="heroText">
-    <div class="eyebrow">GÖKYÜZÜ SENİ BEKLİYOR</div>
-
-    <h1>
-      DAĞTEKİN
-      <span>VIRTUAL AIRLINES</span>
-    </h1>
-
-    <p>
-      Microsoft Flight Simulator için oluşturulan
-      Dağtekin Virtual Airlines'a hoş geldin.
-    </p>
-
-    <div class="buttons">
-      <button class="btn gold" onclick="openAuth('register')">✈ KAYIT OL</button>
-      <button class="btn" onclick="openAuth('login')">GİRİŞ YAP</button>
-    </div>
-  </div>
-
-  <div class="plane">✈</div>
-</section>
-
-<section class="soon">
-  <h2>YAKINDA</h2>
-
-  <div class="cards">
-    <div class="card">
-      <div class="cardIcon">✈️</div>
-      <h3>Uçuşlar</h3>
-      <p>DGT uçuşlarını keşfet ve tamamlanan uçuşlarını kaydet.</p>
-      <span class="tag">YAKINDA</span>
-    </div>
-
-    <div class="card">
-      <div class="cardIcon">👨‍✈️</div>
-      <h3>Pilot Kariyeri</h3>
-      <p>Rütbeni yükselt ve yeni uçak yetkileri kazan.</p>
-      <span class="tag">YAKINDA</span>
-    </div>
-
-    <div class="card">
-      <div class="cardIcon">💵</div>
-      <h3>Şirket Ekonomisi</h3>
-      <p>Uçuşlardan dolar kazan ve şirketi büyüt.</p>
-      <span class="tag">YAKINDA</span>
-    </div>
-
-    <div class="card">
-      <div class="cardIcon">🛫</div>
-      <h3>Filo</h3>
-      <p>A320neo ve Boeing 737-800 ile başla.</p>
-      <span class="tag">YAKINDA</span>
-    </div>
-
-    <div class="card">
-      <div class="cardIcon">📊</div>
-      <h3>Pilot Paneli</h3>
-      <p>Uçuş saatlerini ve kariyerini takip et.</p>
-      <span class="tag">YAKINDA</span>
-    </div>
-
-    <div class="card">
-      <div class="cardIcon">👑</div>
-      <h3>Yönetim Paneli</h3>
-      <p>Dağtekin operasyonlarını yönet.</p>
-      <span class="tag">YAKINDA</span>
-    </div>
-  </div>
-</section>
-
+<section class="hero"><div class="heroText"><div class="eyebrow">GÖKYÜZÜ SENİ BEKLİYOR</div><h1>DAĞTEKİN<span>VIRTUAL AIRLINES</span></h1><p>Microsoft Flight Simulator için oluşturulan Dağtekin Virtual Airlines'a hoş geldin.</p><div class="buttons"><button class="btn gold" onclick="openAuth('register')">✈ KAYIT OL</button><button class="btn" onclick="openAuth('login')">GİRİŞ YAP</button></div></div><div class="plane">✈</div></section>
+<section class="soon"><h2>YAKINDA</h2><div class="cards">
+<div class="card"><div class="cardIcon">✈️</div><h3>Uçuşlar</h3><p>DGT uçuşlarını keşfet ve tamamlanan uçuşlarını kaydet.</p><span class="tag">YAKINDA</span></div>
+<div class="card"><div class="cardIcon">👨‍✈️</div><h3>Pilot Kariyeri</h3><p>Rütbeni yükselt ve yeni uçak yetkileri kazan.</p><span class="tag">YAKINDA</span></div>
+<div class="card"><div class="cardIcon">💵</div><h3>Şirket Ekonomisi</h3><p>Uçuşlardan dolar kazan ve şirketi büyüt.</p><span class="tag">YAKINDA</span></div>
+<div class="card"><div class="cardIcon">🛫</div><h3>Filo</h3><p>A320neo ve Boeing 737-800 ile başla.</p><span class="tag">YAKINDA</span></div>
+<div class="card"><div class="cardIcon">📊</div><h3>Pilot Paneli</h3><p>Uçuş saatlerini ve kariyerini takip et.</p><span class="tag">YAKINDA</span></div>
+<div class="card"><div class="cardIcon">👑</div><h3>Yönetim Paneli</h3><p>Dağtekin operasyonlarını yönet.</p><span class="tag">YAKINDA</span></div>
+</div></section>
 <footer>Dağtekin Virtual Airlines · DGT · OWN THE SKY</footer>
-
 </div>
 
+<div id="authModal" class="modal"><div class="modalBox">
+<button class="close" onclick="closeAuth()">×</button>
+<h2 id="authTitle">Giriş Yap</h2>
+<p class="message">Dağtekin Pilot Portalı</p>
+<div id="nameField" class="field hidden"><label>Ad Soyad</label><input id="fullName" type="text" placeholder="Ad Soyad"></div>
+<div class="field"><label>E-posta</label><input id="email" type="email" placeholder="ornek@mail.com"></div>
+<div class="field"><label>Şifre</label><input id="password" type="password" placeholder="••••••••"></div>
+<button class="btn gold" style="width:100%" onclick="submitAuth()" id="authButton">GİRİŞ YAP</button>
+<div class="message" id="authMessage"></div>
+</div></div>
 
-<!-- ================= GİRİŞ / KAYIT ================= -->
-<div id="authModal" class="modal">
-  <div class="modalBox">
-
-    <button class="close" onclick="closeAuth()">×</button>
-
-    <h2 id="authTitle">Giriş Yap</h2>
-    <p class="message">Dağtekin Pilot Portalı</p>
-
-    <div id="nameField" class="field hidden">
-      <label>Ad Soyad</label>
-      <input id="fullName" type="text" placeholder="Ad Soyad">
-    </div>
-
-    <div class="field">
-      <label>E-posta</label>
-      <input id="email" type="email" placeholder="ornek@mail.com">
-    </div>
-
-    <div class="field">
-      <label>Şifre</label>
-      <input id="password" type="password" placeholder="••••••••">
-    </div>
-
-    <button class="btn gold" style="width:100%" onclick="submitAuth()" id="authButton">
-      GİRİŞ YAP
-    </button>
-
-    <div class="message" id="authMessage"></div>
-
-  </div>
-</div>
-
-
-<!-- ================= PİLOT PANELİ ================= -->
 <div id="dashboard">
-
 <header class="dnav">
-
-  <div class="logo">
-    <div class="logoMark">✈</div>
-    <div>
-      <strong>DAĞTEKİN</strong>
-      <small>AIRLINES</small>
-    </div>
-  </div>
-
-  <div class="navLinks">
-    <span>ANA SAYFA</span>
-    <span>UÇUŞLAR</span>
-    <span>FİLO</span>
-    <span>ROTALAR</span>
-    <span>KARİYER</span>
-    <span>ŞİRKET</span>
-  </div>
-
-  <div class="user">
-    <div class="avatar" id="avatar">D</div>
-    <div>
-      <strong id="navPilotId">DGT-0001</strong>
-      <small id="navName">Pilot</small>
-    </div>
-    <button class="logout" onclick="logout()">ÇIKIŞ</button>
-  </div>
-
+<div class="logo"><div class="logoMark">✈</div><div><strong>DAĞTEKİN</strong><small>AIRLINES</small></div></div>
+<div class="navLinks"><span>ANA SAYFA</span><span>UÇUŞLAR</span><span>FİLO</span><span>ROTALAR</span><span>KARİYER</span><span>ŞİRKET</span></div>
+<div class="user"><div class="avatar" id="avatar">D</div><div><strong id="navPilotId">DGT-0001</strong><small id="navName">Pilot</small></div><button class="logout" onclick="logout()">ÇIKIŞ</button></div>
 </header>
 
 <div class="wrap">
+<h1>Gökyüzü seni bekliyor.</h1><p style="color:#8495a7;margin:8px 0 25px">Dağtekin Virtual Airlines pilot paneline hoş geldin.</p>
 
-  <h1>Gökyüzü seni bekliyor.</h1>
-  <p style="color:#8495a7;margin:8px 0 25px">
-    Dağtekin Virtual Airlines pilot paneline hoş geldin.
-  </p>
-
-  <div class="stats">
-    <div class="stat"><small>ŞİRKET BAKİYESİ</small><strong>$0</strong></div>
-    <div class="stat"><small>AKTİF UÇUŞ</small><strong>0</strong></div>
-    <div class="stat"><small>PİLOT</small><strong>1</strong></div>
-    <div class="stat"><small>FİLO</small><strong>2</strong></div>
-    <div class="stat"><small>DESTİNASYON</small><strong>0</strong></div>
-  </div>
-
-  <div class="grid">
-
-    <div class="panel">
-      <h3>AKTİF UÇUŞLAR</h3>
-
-      <div class="info">
-        <strong>DGT101</strong>
-        <span>İstanbul → Londra</span>
-      </div>
-
-      <div class="info">
-        <strong>DGT102</strong>
-        <span>Yakında</span>
-      </div>
-    </div>
-
-    <div class="panel">
-      <h3>PİLOT KARİYERİM</h3>
-
-      <div class="info">
-        <span>PİLOT ID</span>
-        <strong id="pilotId">DGT-0001</strong>
-      </div>
-
-      <div class="info">
-        <span>RÜTBE</span>
-        <strong>First Officer</strong>
-      </div>
-
-      <div class="info">
-        <span>UÇUŞ SAATİ</span>
-        <strong>0:00</strong>
-      </div>
-
-      <div class="info">
-        <span>TOPLAM UÇUŞ</span>
-        <strong>0</strong>
-      </div>
-
-      <div class="info">
-        <span>BAKİYE</span>
-        <strong>$0</strong>
-      </div>
-    </div>
-
-    <div class="panel level">
-      <h3>KARİYER SEVİYESİ</h3>
-      <div class="medal">🏅</div>
-      <h2>SEVİYE 1</h2>
-      <div class="progress"><div></div></div>
-      <p style="color:#8292a4">%0</p>
-    </div>
-
-    <div class="panel">
-      <h3>UÇAK YETKİLERİ</h3>
-
-      <div class="aircraft">
-        <span>✈ A320neo</span>
-        <span class="open">AÇIK ✓</span>
-      </div>
-
-      <div class="aircraft">
-        <span>✈ B737-800</span>
-        <span class="open">AÇIK ✓</span>
-      </div>
-
-      <div class="aircraft">
-        <span>✈ A321neo</span>
-        <span class="locked">KİLİTLİ 🔒</span>
-      </div>
-
-      <div class="aircraft">
-        <span>✈ B787-9</span>
-        <span class="locked">KİLİTLİ 🔒</span>
-      </div>
-
-      <div class="aircraft">
-        <span>✈ A350-900</span>
-        <span class="locked">KİLİTLİ 🔒</span>
-      </div>
-    </div>
-
-  </div>
-
+<div class="stats">
+<div class="stat"><small>ŞİRKET BAKİYESİ</small><strong>$0</strong></div>
+<div class="stat"><small>AKTİF UÇUŞ</small><strong>0</strong></div>
+<div class="stat"><small>PİLOT</small><strong id="pilotCount">1</strong></div>
+<div class="stat"><small>FİLO</small><strong>2</strong></div>
+<div class="stat"><small>DESTİNASYON</small><strong>0</strong></div>
 </div>
 
+<div class="grid">
+<div class="panel"><h3>AKTİF UÇUŞLAR</h3><div class="info"><strong>DGT101</strong><span>İstanbul → Londra</span></div><div class="info"><strong>DGT102</strong><span>Yakında</span></div></div>
+<div class="panel"><h3>PİLOT KARİYERİM</h3>
+<div class="info"><span>PİLOT ID</span><strong id="pilotId">DGT-0001</strong></div>
+<div class="info"><span>RÜTBE</span><strong id="pilotRank">First Officer</strong></div>
+<div class="info"><span>UÇUŞ SAATİ</span><strong id="pilotHours">0:00</strong></div>
+<div class="info"><span>TOPLAM UÇUŞ</span><strong id="pilotFlights">0</strong></div>
+<div class="info"><span>BAKİYE</span><strong id="pilotBalance">$0</strong></div>
 </div>
-
+<div class="panel level"><h3>KARİYER SEVİYESİ</h3><div class="medal">🏅</div><h2 id="careerLevel">SEVİYE 1</h2><div class="progress"><div id="careerBar"></div></div><p id="careerPercent" style="color:#8292a4">%0</p></div>
+<div class="panel"><h3>UÇAK YETKİLERİ</h3>
+<div class="aircraft"><span>✈ A320neo</span><span class="open">AÇIK ✓</span></div>
+<div class="aircraft"><span>✈ B737-800</span><span class="open">AÇIK ✓</span></div>
+<div class="aircraft"><span>✈ A321neo</span><span class="locked">KİLİTLİ 🔒</span></div>
+<div class="aircraft"><span>✈ B787-9</span><span class="locked">KİLİTLİ 🔒</span></div>
+<div class="aircraft"><span>✈ A350-900</span><span class="locked">KİLİTLİ 🔒</span></div>
+</div>
+</div>
+</div></div>
 
 <script>
 const SUPABASE_URL="https://nmvlcvczrcntqwagyqfc.supabase.co";
 const SUPABASE_KEY="sb_publishable_LazLoixS_Siuj1Q4N3JWEg_xPyw59bj";
-
-const sb=supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let authMode="login";
 
-
 function openAuth(mode){
-
-  authMode=mode;
-
-  document.getElementById("authModal").classList.add("active");
-
-  document.getElementById("authMessage").textContent="";
-
-  const register=mode==="register";
-
-  document.getElementById("nameField")
-    .classList.toggle("hidden",!register);
-
-  document.getElementById("authTitle").textContent=
-    register ? "Kayıt Ol" : "Giriş Yap";
-
-  document.getElementById("authButton").textContent=
-    register ? "KAYIT OL" : "GİRİŞ YAP";
+  authMode=mode; authModal.classList.add("active"); authMessage.textContent="";
+  const reg=mode==="register";
+  nameField.classList.toggle("hidden",!reg);
+  authTitle.textContent=reg?"Kayıt Ol":"Giriş Yap";
+  authButton.textContent=reg?"KAYIT OL":"GİRİŞ YAP";
 }
-
-
-function closeAuth(){
-  document.getElementById("authModal").classList.remove("active");
-}
-
+function closeAuth(){authModal.classList.remove("active")}
 
 async function submitAuth(){
-
-  const email=document.getElementById("email").value.trim();
-  const password=document.getElementById("password").value;
-  const msg=document.getElementById("authMessage");
-
-  if(!email || !password){
-    msg.textContent="E-posta ve şifre gerekli.";
-    return;
-  }
+  const emailVal=email.value.trim(), passVal=password.value;
+  authMessage.className="message"; authMessage.textContent="";
+  if(!emailVal||!passVal){authMessage.classList.add("error");authMessage.textContent="E-posta ve şifre gerekli.";return}
 
   if(authMode==="register"){
-
-    const fullName=document.getElementById("fullName").value.trim();
-
-    if(!fullName){
-      msg.textContent="Ad Soyad gerekli.";
-      return;
-    }
+    const nameVal=fullName.value.trim();
+    if(!nameVal){authMessage.classList.add("error");authMessage.textContent="Ad Soyad gerekli.";return}
 
     const {data,error}=await sb.auth.signUp({
-      email,
-      password,
-      options:{
-        data:{
-          full_name:fullName
-        }
-      }
+      email:emailVal,password:passVal,options:{data:{full_name:nameVal}}
     });
+    if(error){authMessage.classList.add("error");authMessage.textContent=error.message;return}
 
-    if(error){
-      msg.textContent=error.message;
-      return;
+    if(data.session){
+      await loadProfile(data.user);
+    }else{
+      authMessage.classList.add("success");
+      authMessage.textContent="Kayıt başarılı. E-posta doğrulaması gerekiyorsa e-postanı kontrol et; sonra giriş yap.";
     }
-
-    msg.textContent=
-      "Kayıt başarılı. E-posta doğrulaması gerekiyorsa gelen kutunu kontrol et.";
-
   }else{
-
-    const {data,error}=await sb.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if(error){
-      msg.textContent=error.message;
-      return;
-    }
-
-    showDashboard(data.user);
+    const {data,error}=await sb.auth.signInWithPassword({email:emailVal,password:passVal});
+    if(error){authMessage.classList.add("error");authMessage.textContent=error.message;return}
+    await loadProfile(data.user);
   }
 }
 
-
-function showDashboard(user){
-
-  document.getElementById("landing").classList.add("hidden");
-  document.getElementById("dashboard").style.display="block";
+async function loadProfile(user){
   closeAuth();
+  landing.classList.add("hidden");
+  dashboard.style.display="block";
 
-  const name=
-    user.user_metadata?.full_name ||
-    user.email.split("@")[0];
+  let {data,error}=await sb.from("profiles").select("*").eq("id",user.id).maybeSingle();
 
-  document.getElementById("navName").textContent=name;
-  document.getElementById("avatar").textContent=
-    name.charAt(0).toUpperCase();
+  if(error){console.error(error);return}
 
-  document.getElementById("navPilotId").textContent="DGT-0001";
-  document.getElementById("pilotId").textContent="DGT-0001";
+  if(!data){
+    const {data:newProfile,error:insertError}=await sb.from("profiles").insert({
+      id:user.id,
+      pilot_id:"DGT-0001",
+      full_name:user.user_metadata?.full_name||user.email.split("@")[0]
+    }).select().single();
+
+    if(insertError){
+      console.error(insertError);
+      return;
+    }
+    data=newProfile;
+  }
+
+  navPilotId.textContent=data.pilot_id;
+  pilotId.textContent=data.pilot_id;
+  navName.textContent=data.full_name||user.email.split("@")[0];
+  avatar.textContent=(data.full_name||"P").charAt(0).toUpperCase();
+
+  pilotRank.textContent=data.rank;
+  pilotHours.textContent=toClock(data.flight_hours);
+  pilotFlights.textContent=data.total_flights;
+  pilotBalance.textContent="$"+Number(data.balance).toLocaleString("en-US");
+
+  careerLevel.textContent="SEVİYE "+data.career_level;
+  const progress=Math.min(100,(Number(data.flight_hours)%25)/25*100);
+  careerBar.style.width=progress+"%";
+  careerPercent.textContent="%"+Math.round(progress);
 }
 
+function toClock(hours){
+  const h=Number(hours)||0, whole=Math.floor(h), min=Math.round((h-whole)*60);
+  return whole+":"+String(min).padStart(2,"0");
+}
 
 async function logout(){
-
   await sb.auth.signOut();
-
-  document.getElementById("dashboard").style.display="none";
-  document.getElementById("landing").classList.remove("hidden");
+  dashboard.style.display="none";
+  landing.classList.remove("hidden");
 }
-
 
 async function checkSession(){
-
   const {data}=await sb.auth.getSession();
-
-  if(data.session){
-    showDashboard(data.session.user);
-  }
+  if(data.session) await loadProfile(data.session.user);
 }
-
 checkSession();
-
-
-sb.auth.onAuthStateChange((event,session)=>{
-
-  if(session){
-    showDashboard(session.user);
-  }
-
-});
 </script>
-
 </body>
 </html>
