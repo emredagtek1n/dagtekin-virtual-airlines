@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dağtekin Virtual Airlines</title>
+<style>
+:root{
+  --bg:#050b14;--panel:#0a1421;--gold:#d8ad4b;--red:#d52b2b;
+  --text:#f5f7fb;--muted:#9aa9ba;--line:#1b2b3d;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+}
+.hero{
+  min-height:78vh;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:70px 20px;
+  background:
+    radial-gradient(circle at 50% 25%,rgba(45,111,168,.18),transparent 30%),
+    linear-gradient(180deg,#071321 0%,#050b14 100%);
+}
+.hero-inner{max-width:850px}
+.logo-mark{
+  width:76px;height:76px;margin:0 auto 22px;border:2px solid var(--gold);
+  border-radius:50%;display:grid;place-items:center;color:var(--gold);
+  font-size:34px;font-weight:900;
+}
+.brand{
+  margin:0;font-family:Georgia,serif;font-size:clamp(48px,9vw,92px);
+  letter-spacing:5px;line-height:.95;
+}
+.subtitle{
+  margin-top:10px;color:var(--red);font-size:15px;font-weight:800;
+  letter-spacing:8px;
+}
+.slogan{
+  margin:45px 0 8px;font-family:Georgia,serif;font-size:30px;
+  letter-spacing:4px;color:#fff;
+}
+.slogan-tr{color:var(--muted);font-size:14px}
+.actions{display:flex;justify-content:center;gap:12px;margin-top:30px;flex-wrap:wrap}
+button{
+  border:1px solid var(--gold);background:transparent;color:#fff;
+  padding:13px 25px;border-radius:8px;font-weight:800;cursor:pointer;
+}
+button.primary{background:var(--gold);color:#111}
+button:hover{filter:brightness(1.08)}
+section{max-width:1100px;margin:auto;padding:70px 20px}
+.section-title{text-align:center;font-family:Georgia,serif;font-size:32px;margin:0}
+.section-sub{text-align:center;color:var(--muted);margin:10px auto 35px}
+.cards{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+}
+.card{
+  background:linear-gradient(145deg,#0c1928,#08111d);
+  border:1px solid var(--line);border-radius:13px;padding:24px;
+  min-height:150px;
+}
+.card-icon{font-size:28px;margin-bottom:15px}
+.card h3{margin:0 0 8px;font-size:17px}
+.card p{margin:0;color:var(--muted);font-size:13px}
+.soon{
+  display:inline-block;margin-bottom:12px;padding:4px 8px;border-radius:20px;
+  background:#2b2210;color:var(--gold);font-size:10px;font-weight:800;
+  letter-spacing:1px;
+}
+footer{
+  border-top:1px solid var(--line);padding:30px 20px;text-align:center;
+  color:#68788b;font-size:12px;
+}
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;
+  align-items:center;justify-content:center;padding:20px;z-index:10;
+}
+.modal.open{display:flex}
+.box{
+  width:min(420px,100%);background:#0a1421;border:1px solid var(--line);
+  border-radius:14px;padding:26px;position:relative;
+}
+.close{
+  position:absolute;right:16px;top:12px;background:none;border:0;
+  border-color:transparent;font-size:22px;padding:4px;color:#fff;
+}
+.box h2{font-family:Georgia,serif;margin-top:0}
+.field{margin:14px 0}
+.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}
+.field input{
+  width:100%;padding:12px;border:1px solid var(--line);border-radius:7px;
+  background:#050c15;color:#fff;outline:none;
+}
+.message{margin-top:15px;color:var(--muted);font-size:13px}
+@media(max-width:760px){.cards{grid-template-columns:1fr}.hero{min-height:70vh}.brand{font-size:48px}}
+</style>
+</head>
+<body>
+
+<main>
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="logo-mark">✈</div>
+      <h1 class="brand">DAĞTEKİN</h1>
+      <div class="subtitle">VIRTUAL AIRLINES</div>
+
+      <div class="slogan">OWN THE SKY</div>
+      <div class="slogan-tr">Gökyüzüne Sahip Ol</div>
+
+      <div class="actions">
+        <button class="primary" onclick="openModal('login')">GİRİŞ YAP</button>
+        <button onclick="openModal('register')">KAYIT OL</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="soon">
+    <h2 class="section-title">YAKINDA</h2>
+    <p class="section-sub">Dağtekin Virtual Airlines zamanla büyüyecek.</p>
+
+    <div class="cards">
+      <article class="card">
+        <div class="card-icon">✈️</div>
+        <span class="soon">YAKINDA</span>
+        <h3>Uçuşlar</h3>
+        <p>DGT101 ve diğer Dağtekin uçuşlarını görüntüle ve uçuşlarını kaydet.</p>
+      </article>
+
+      <article class="card">
+        <div class="card-icon">👨‍✈️</div>
+        <span class="soon">YAKINDA</span>
+        <h3>Pilot Kariyeri</h3>
+        <p>Uçuş saatleriyle rütbeni yükselt ve yeni yetkiler kazan.</p>
+      </article>
+
+      <article class="card">
+        <div class="card-icon">💵</div>
+        <span class="soon">YAKINDA</span>
+        <h3>Şirket Ekonomisi</h3>
+        <p>Uçuşlardan dolar kazan, şirketin gelir ve giderlerini takip et.</p>
+      </article>
+
+      <article class="card">
+        <div class="card-icon">🛫</div>
+        <span class="soon">YAKINDA</span>
+        <h3>Filo</h3>
+        <p>Dağtekin'in A320neo ve Boeing 737-800 filosunu yönet.</p>
+      </article>
+
+      <article class="card">
+        <div class="card-icon">📊</div>
+        <span class="soon">YAKINDA</span>
+        <h3>Pilot Paneli</h3>
+        <p>Uçuş saatlerini, kazançlarını, rütbeni ve istatistiklerini takip et.</p>
+      </article>
+
+      <article class="card">
+        <div class="card-icon">👑</div>
+        <span class="soon">YAKINDA</span>
+        <h3>Yönetim Paneli</h3>
+        <p>CEO ve yöneticiler için şirketi yönetmeye yarayan özel panel.</p>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer>
+  © 2026 Dağtekin Virtual Airlines · DGT · Own the Sky
+</footer>
+
+<div class="modal" id="modal">
+  <div class="box">
+    <button class="close" onclick="closeModal()">×</button>
+
+    <div id="login">
+      <h2>Pilot Girişi</h2>
+      <div class="field"><label>E-posta veya Pilot ID</label><input placeholder="DGT-0001 veya e-posta"></div>
+      <div class="field"><label>Şifre</label><input type="password" placeholder="••••••••"></div>
+      <button class="primary" style="width:100%" onclick="demoMessage('Giriş sistemi bir sonraki aşamada gerçek hesap sistemine bağlanacak.')">GİRİŞ YAP</button>
+    </div>
+
+    <div id="register" style="display:none">
+      <h2>Pilot Hesabı Oluştur</h2>
+      <div class="field"><label>Ad Soyad</label><input placeholder="Ad Soyad"></div>
+      <div class="field"><label>E-posta</label><input type="email" placeholder="pilot@example.com"></div>
+      <div class="field"><label>Şifre</label><input type="password" placeholder="••••••••"></div>
+      <button class="primary" style="width:100%" onclick="demoMessage('Kayıt sistemi bir sonraki aşamada gerçek hesap sistemine bağlanacak.')">KAYIT OL</button>
+    </div>
+
+    <div class="message" id="message"></div>
+  </div>
+</div>
+
+<script>
+function openModal(type){
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('login').style.display=type==='login'?'block':'none';
+  document.getElementById('register').style.display=type==='register'?'block':'none';
+  document.getElementById('message').textContent='';
+}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+function demoMessage(text){document.getElementById('message').textContent=text}
+</script>
+</body>
+</html>
